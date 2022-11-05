@@ -5,7 +5,14 @@ public class Calculator {
     private double secondNumber;
     private String operator;
 
-    public void dataInput(){
+    public void start(){
+        while (true){
+            dataInput();
+            printTheResult(calculate());
+        }
+    }
+
+    private void dataInput(){
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter an operator: ");
@@ -50,7 +57,7 @@ public class Calculator {
         }
     }
 
-    public double calculate() {
+    private double calculate() {
         switch (operator) {
             case "+":
                 return firstNumber + secondNumber;
@@ -65,10 +72,10 @@ public class Calculator {
         }
     }
 
-    public void printTheResult(double number){
+    private void printTheResult(double number){
         String num = String.valueOf(number);
         if (num.charAt(num.length()-2)=='.' && num.charAt(num.length()-1)=='0'){
-            System.out.printf("Your result is: %.0f", number);
+            System.out.printf("Your result is: %.0f\n\n", number);
         } else {
             System.out.println("Your result is: " + number);
         }
