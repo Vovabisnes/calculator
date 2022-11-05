@@ -1,74 +1,62 @@
 import java.util.Scanner;
 
 public class Calculator {
-    private double firstNumber;
-    private double secondNumber;
-    private String operator;
+     private Expression expression;
 
-    public void start(){
+   public void start(){
         while (true){
             dataInput();
-            printTheResult(calculate());
+            printTheResult(expression.calculate());
         }
     }
 
     private void dataInput(){
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter an operator: ");
+        System.out.println("Enter your math expression: ");
         while (true){
-            operator = scanner.next();
-            if (operator.equals("+") || operator.equals("-") || operator.equals("*") || operator.equals("/") || operator.equals("sqrt")) {
-                break;
+            String line = scanner.nextLine();
+            expression = parseLine(line);
+            if(expression == null){
+                System.out.println("Enter the right expression: ");
             } else {
-                System.out.println("Enter the right operator");
-            }
-        }
-
-        System.out.println("Enter the first number: ");
-        while (true) {
-            String line = scanner.next();
-            try {
-                firstNumber = Double.parseDouble(line);
                 break;
-            } catch (Exception e) {
-                System.out.println("Enter the right number: ");
-            }
-        }
-
-        if (operator.equals("sqrt")) {
-            return;
-        }
-
-        System.out.println("Enter the second number: ");
-        while (true) {
-            String line = scanner.next();
-            if (line.equals("0")) {
-                System.out.println("Division by 0 is not possible");
-                System.out.println("Enter the right number: ");
-                continue;
-            }
-            try {
-                secondNumber = Double.parseDouble(line);
-                break;
-            } catch (Exception e) {
-                System.out.println("Enter the right number: ");
             }
         }
     }
 
-    private double calculate() {
-        switch (operator) {
-            case "+":
-                return firstNumber + secondNumber;
-            case "-":
-                return firstNumber - secondNumber;
-            case "/":
-                return firstNumber / secondNumber;
-            case "*":
-                return firstNumber * secondNumber;
-            default:
-                return Math.sqrt(firstNumber);
+    private Expression parseLine(String line){
+        line = line.replace(" ", "");
+        try {
+            int operatorIndex = -1;
+
+            if (line.contains("+")) {
+                operatorIndex = line.indexOf("+");
+            } else if (line.contains("-")){
+                operatorIndex = line.indexOf("-");
+            } else if (line.contains("/")){
+                operatorIndex = line.indexOf("/");
+            } else if (line.contains("*")) {
+                operatorIndex = line.indexOf("*");
+            }
+
+            if (operatorIndex == -1){
+                return null;
+            } else {
+                try {
+                    String operator = String.valueOf(line.charAt(operatorIndex));
+                    double firstNumber = Double.parseDouble(line.substring(0,operatorIndex));
+                    double secondNumber = Double.parseDouble(line.substring(operatorIndex+1));
+                    
+                    if (secondNumber==0 && operator.equals("/")) return null;
+
+                    return new Expression(firstNumber, secondNumber, operator);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            return null;
         }
     }
 
