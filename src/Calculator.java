@@ -1,25 +1,17 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Calculator {
     private double firstNumber;
     private double secondNumber;
     private String operator;
-    private static final ArrayList<String> operators = new ArrayList<>();
 
-    static {
-        operators.add("+");
-        operators.add("-");
-        operators.add("/");
-        operators.add("*");
-    }
     public void dataInput(){
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter an operator: ");
         while (true){
             operator = scanner.next();
-            if (operators.contains(operator)) {
+            if (operator.equals("+") || operator.equals("-") || operator.equals("*") || operator.equals("/") || operator.equals("sqrt")) {
                 break;
             } else {
                 System.out.println("Enter the right operator");
@@ -35,6 +27,10 @@ public class Calculator {
             } catch (Exception e) {
                 System.out.println("Enter the right number: ");
             }
+        }
+
+        if (operator.equals("sqrt")) {
+            return;
         }
 
         System.out.println("Enter the second number: ");
@@ -55,19 +51,21 @@ public class Calculator {
     }
 
     public double calculate() {
-        if (operator.equals(operators.get(0))) {
-            return firstNumber + secondNumber;
-        } else if (operator.equals(operators.get(1))) {
-            return firstNumber - secondNumber;
-        } else if (operator.equals(operators.get(2))) {
-            return firstNumber / secondNumber;
-        } else if (operator.equals(operators.get(3))) {
-            return firstNumber * secondNumber;
+        switch (operator) {
+            case "+":
+                return firstNumber + secondNumber;
+            case "-":
+                return firstNumber - secondNumber;
+            case "/":
+                return firstNumber / secondNumber;
+            case "*":
+                return firstNumber * secondNumber;
+            default:
+                return Math.sqrt(firstNumber);
         }
-        return 0;
     }
 
-    public void printTheResult(double number){;
+    public void printTheResult(double number){
         String num = String.valueOf(number);
         if (num.charAt(num.length()-2)=='.' && num.charAt(num.length()-1)=='0'){
             System.out.printf("Your result is: %.0f", number);
