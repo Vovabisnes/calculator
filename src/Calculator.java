@@ -1,62 +1,87 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Calculator {
-     private Expression expression;
+    private static final ArrayList<String> operators = new ArrayList<>();
 
+    static {
+        operators.add("+");
+        operators.add("-");
+    }
    public void start(){
         while (true){
             dataInput();
-            printTheResult(expression.calculate());
         }
     }
 
     private void dataInput(){
         Scanner scanner = new Scanner(System.in);
+        ArrayList<String> expression;
 
         System.out.println("Enter your math expression: ");
         while (true){
             String line = scanner.nextLine();
             expression = parseLine(line);
-            if(expression == null){
+            double result = calculate(expression);
+
+            if (expression == null || result == -1234567891){
                 System.out.println("Enter the right expression: ");
             } else {
+                printTheResult(result);
                 break;
             }
         }
     }
 
-    private Expression parseLine(String line){
+    private ArrayList<String> parseLine(String line){
         line = line.replace(" ", "");
-        try {
-            int operatorIndex = -1;
 
-            if (line.contains("+")) {
-                operatorIndex = line.indexOf("+");
-            } else if (line.contains("-")){
-                operatorIndex = line.indexOf("-");
-            } else if (line.contains("/")){
-                operatorIndex = line.indexOf("/");
-            } else if (line.contains("*")) {
-                operatorIndex = line.indexOf("*");
-            }
+        ArrayList<String> expression = new ArrayList<>();
+        int currentOperatorIndex;
+        int previousOperatorIndex = 0;
+        int nextOperatorIndex;
 
-            if (operatorIndex == -1){
+        while (true){
+            try {
+                currentOperatorIndex = getNextOperatorIndex(line,previousOperatorIndex);
+
+                expression.add(line.substring(previousOperatorIndex, currentOperatorIndex));
+                expression.add(String.valueOf(line.charAt(currentOperatorIndex)));
+
+                nextOperatorIndex = getNextOperatorIndex(line,currentOperatorIndex);
+                if (nextOperatorIndex == -1){
+                    expression.add(line.substring(currentOperatorIndex+1));
+                    break;
+                }
+                previousOperatorIndex = currentOperatorIndex+1;
+            }  catch (Exception e){
                 return null;
-            } else {
-                try {
-                    String operator = String.valueOf(line.charAt(operatorIndex));
-                    double firstNumber = Double.parseDouble(line.substring(0,operatorIndex));
-                    double secondNumber = Double.parseDouble(line.substring(operatorIndex+1));
-                    
-                    if (secondNumber==0 && operator.equals("/")) return null;
+            }
+        }
+        return expression;
+    }
 
-                    return new Expression(firstNumber, secondNumber, operator);
-                } catch (Exception e) {
-                    return null;
+    public static double calculate(ArrayList<String> expression){
+        int position = 0;
+        try {
+            double first = Double.parseDouble(expression.get(position++));
+            while (position < expression.size()){
+                String operator = expression.get(position);
+                if (!operator.equals("+") && !operator.equals("-")){
+                    break;
+                } else {
+                    position++;
+                }
+                double second = Double.parseDouble(expression.get(position++));
+                if(operator.equals("+")){
+                    first+=second;
+                } else {
+                    first-=second;
                 }
             }
-        } catch (Exception e) {
-            return null;
+            return first;
+        } catch (Exception e){
+            return -1234567891;
         }
     }
 
@@ -67,6 +92,16 @@ public class Calculator {
         } else {
             System.out.println("Your result is: " + number);
         }
+    }
+
+    private int getNextOperatorIndex(String line, int index){
+
+       for (int i =index+1; i<line.length(); i++){
+           if (operators.contains(String.valueOf(line.charAt(i)))){
+               return i;
+           }
+       }
+       return -1;
     }
 
 }
