@@ -3,10 +3,13 @@ import java.util.Scanner;
 
 public class Calculator {
     private static final ArrayList<String> operators = new ArrayList<>();
+    private int position;
 
     static {
         operators.add("+");
         operators.add("-");
+        operators.add("*");
+        operators.add("/");
     }
    public void start(){
         while (true){
@@ -18,9 +21,12 @@ public class Calculator {
         Scanner scanner = new Scanner(System.in);
         ArrayList<String> expression;
 
-        System.out.println("Enter your math expression: ");
+        System.out.println("Enter your math expression or exit: ");
         while (true){
             String line = scanner.nextLine();
+            if (line.equals("exit")){
+                System.exit(1);
+            }
             expression = parseLine(line);
             double result = calculate(expression);
 
@@ -58,13 +64,19 @@ public class Calculator {
                 return null;
             }
         }
+        if (expression.get(0).contains("+")){
+            return null;
+        }
         return expression;
     }
 
-    public static double calculate(ArrayList<String> expression){
-        int position = 0;
+    private double calculate(ArrayList<String> expression){
+        position = 0;
         try {
-            double first = Double.parseDouble(expression.get(position++));
+            double first = multiply(expression);
+            if (first == -1234567891){
+                return -1234567891;
+            }
             while (position < expression.size()){
                 String operator = expression.get(position);
                 if (!operator.equals("+") && !operator.equals("-")){
@@ -72,11 +84,37 @@ public class Calculator {
                 } else {
                     position++;
                 }
-                double second = Double.parseDouble(expression.get(position++));
+                double second = multiply(expression);
+                if (second == -1234567891){
+                    return -1234567891;
+                }
                 if(operator.equals("+")){
                     first+=second;
                 } else {
                     first-=second;
+                }
+            }
+            return first;
+        } catch (Exception e){
+            return -1234567891;
+        }
+    }
+
+    private double multiply(ArrayList<String> expression){
+        try {
+            double first = Double.parseDouble(expression.get(position++));
+            while (position < expression.size()){
+                String operator = expression.get(position);
+                if (!operator.equals("*") && !operator.equals("/")){
+                    break;
+                } else {
+                    position++;
+                }
+                double second = Double.parseDouble(expression.get(position++));
+                if(operator.equals("*")){
+                    first*=second;
+                } else {
+                    first/=second;
                 }
             }
             return first;
