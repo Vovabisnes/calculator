@@ -23,11 +23,20 @@ public class Reader {
     }
 
     private void readData(){
-        System.out.println("Enter an operator: ");
+        System.out.println("Enter an operator( + - / * sqrt ): ");
         operator = readOperator();
 
         System.out.println("Enter the first number: ");
-        firstNumber = readNumber();
+        while (true){
+            firstNumber = readNumber();
+            if (operator.equals("sqrt") && firstNumber<0){
+                System.out.println("Enter the right number: ");
+            } else if (operator.equals("sqrt")){
+                return;
+            } else {
+                break;
+            }
+        }
 
         System.out.println("Enter the second number: ");
         while (true){
@@ -45,7 +54,7 @@ public class Reader {
         String operatorValue;
         while (true){
             operatorValue = scanner.next();
-            if (operatorValue.equals("+") || operatorValue.equals("-") || operatorValue.equals("/") || operatorValue.equals("*")) {
+            if (operatorValue.equals("+") || operatorValue.equals("-") || operatorValue.equals("/") || operatorValue.equals("*") || operatorValue.equals("sqrt")) {
                 return operatorValue;
             } else {
                 System.out.println("Enter the right operator");

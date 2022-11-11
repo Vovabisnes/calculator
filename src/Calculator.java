@@ -10,6 +10,8 @@ public class Calculator {
                 return reader.getFirstNumber() * reader.getSecondNumber();
             case "/":
                 return reader.getFirstNumber() / reader.getSecondNumber();
+            case "sqrt":
+                return Math.sqrt(reader.getFirstNumber());
         }
         return 0;
     }
