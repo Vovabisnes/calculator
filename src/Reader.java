@@ -22,7 +22,7 @@ public class Reader {
         return operator;
     }
 
-    private void readData(){
+    public void readData(){
         System.out.println("Enter an operator( + - / * sqrt ): ");
         operator = readOperator();
 
