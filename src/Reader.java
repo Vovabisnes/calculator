@@ -14,10 +14,12 @@ public class Reader {
 
     private String expressionInput(){
         System.out.println("Enter your math expression");
-        return scanner.next();
+        return scanner.nextLine();
     }
 
     private Expression parseLine(String line){
+       line = line.replace(" ", "");
+
         boolean isFirstSymbolMinus = false;
         if (line.charAt(0)=='-'){
             isFirstSymbolMinus = true;
