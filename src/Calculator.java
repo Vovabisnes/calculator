@@ -2,32 +2,31 @@ import java.util.Scanner;
 
 public class Calculator {
     private final Reader reader = new Reader();
+    private final Scanner scanner = new Scanner(System.in);
+    private Expression expression;
 
     public void start(){
-        Scanner scanner = new Scanner(System.in);
         String line;
-        while (true){
+        do {
+            expression = reader.setExpression();
             printTheResult(calculate());
             System.out.println("\nContinue y/n?");
             line = scanner.next();
-            if (line.equals("n")) break;
-            reader.readData();
-        }
+        } while (!line.equals("n"));
     }
     private double calculate() {
-        switch (reader.getOperator()) {
+        switch (expression.getOperator()) {
             case "+":
-                return reader.getFirstNumber() + reader.getSecondNumber();
+                return expression.getFirstNumber() + expression.getSecondNumber();
             case "-":
-                return reader.getFirstNumber() - reader.getSecondNumber();
+                return expression.getFirstNumber() - expression.getSecondNumber();
             case "*":
-                return reader.getFirstNumber() * reader.getSecondNumber();
+                return expression.getFirstNumber() * expression.getSecondNumber();
             case "/":
-                return reader.getFirstNumber() / reader.getSecondNumber();
-            case "sqrt":
-                return Math.sqrt(reader.getFirstNumber());
+                return expression.getFirstNumber() / expression.getSecondNumber();
+            default:
+                return 0;
         }
-        return 0;
     }
 
     private void printTheResult(double number){
