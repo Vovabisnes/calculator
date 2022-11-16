@@ -23,16 +23,13 @@ public class Reader {
     }
 
     private ArrayList<String> parseLine(String line){
-        Pattern pattern1 = Pattern.compile("[^+\\d \\-.]");
+        Pattern pattern1 = Pattern.compile("[^+\\d \\-.*/]");
         Matcher matcher1 = pattern1.matcher (line);
-        while (matcher1.find()){
-            System.out.println(matcher1.group() + " " + matcher1.start());
-        }
         if (matcher1.find()){
             return null;
         }
 
-        Pattern pattern2 = Pattern.compile ("\\d+\\.\\d+|\\d+|[+\\-]");
+        Pattern pattern2 = Pattern.compile ("\\d+\\.\\d+|\\d+|[+\\-*/]");
         Matcher matcher2 = pattern2.matcher(line);
         ArrayList<String> list = new ArrayList<>();
         while (matcher2.find()){

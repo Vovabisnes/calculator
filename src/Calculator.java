@@ -4,7 +4,8 @@ import java.util.Scanner;
 public class Calculator {
     private final Reader reader = new Reader();
     private final Scanner scanner = new Scanner(System.in);
-    private int position = 0;
+    private int position;
+    private boolean firstNumberIsNegative;
 
     public void start(){
         String line="";
@@ -12,6 +13,7 @@ public class Calculator {
         double result;
 
         while (!line.equals("n")) {
+            position = 0;
             list = reader.startReader();
             result = calculate(list);
             if (result == -7777777){
@@ -19,7 +21,6 @@ public class Calculator {
                 continue;
             } else {
                 printTheResult(result);
-                position = 0;
             }
             System.out.println("\nContinue y/n?");
             line = scanner.next();
@@ -28,16 +29,10 @@ public class Calculator {
 
     private double calculate(ArrayList<String> expression){
 
-        boolean firstNumberIsNegative = expression.get(0).equals("-");
+        firstNumberIsNegative = expression.get(0).equals("-");
 
         try {
-            double first;
-            if (firstNumberIsNegative){
-                expression.remove(expression.get(0));
-                first = Double.parseDouble(expression.get(position++)) * -1;
-            } else {
-                first = Double.parseDouble(expression.get(position++));
-            }
+            double first = multiply(expression);
             if (first == -7777777){
                 return -7777777;
             }
@@ -48,7 +43,7 @@ public class Calculator {
                 } else {
                     position++;
                 }
-                double second = Double.parseDouble(expression.get(position++));
+                double second = multiply(expression);
                 if (second == -7777777){
                     return -7777777;
                 }
@@ -60,7 +55,39 @@ public class Calculator {
             }
             return first;
         } catch (Exception e){
-            System.out.println("something went wrong");
+            return -7777777;
+        }
+    }
+
+    private double multiply(ArrayList<String> expression){
+        try {
+            double first;
+            if (firstNumberIsNegative){
+                expression.remove(expression.get(0));
+                first = Double.parseDouble(expression.get(position++)) * -1;
+                firstNumberIsNegative = false;
+            } else {
+                first = Double.parseDouble(expression.get(position++));
+            }
+            while (position < expression.size()){
+                String operator = expression.get(position);
+                if (!operator.equals("*") && !operator.equals("/")){
+                    break;
+                } else {
+                    position++;
+                }
+                double second = Double.parseDouble(expression.get(position++));
+                if(operator.equals("*")){
+                    first*=second;
+                } else if(second == 0) {
+                    System.out.println("Division by 0 is not possible!");
+                    return -7777777;
+                } else {
+                    first/=second;
+                }
+            }
+            return first;
+        } catch (Exception e){
             return -7777777;
         }
     }
