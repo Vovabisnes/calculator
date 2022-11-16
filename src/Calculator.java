@@ -16,7 +16,7 @@ public class Calculator {
             position = 0;
             list = reader.startReader();
             result = calculate(list);
-            if (result == -7777777){
+            if (result == -7777777 || position < list.size()){
                 System.out.println("Your expression is not correct!");
                 continue;
             } else {
