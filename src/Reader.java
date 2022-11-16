@@ -1,13 +1,18 @@
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Reader {
     private final Scanner scanner = new Scanner(System.in);
 
-    public Expression setExpression (){
+    public ArrayList<String> startReader(){
         while (true){
-            Expression exp = parseLine(expressionInput());
-            if(exp != null){
-                return exp;
+            ArrayList<String> list = parseLine(expressionInput());
+            if (list == null){
+                System.out.println("Your expression is not correct");
+            } else {
+                return list;
             }
         }
     }
@@ -17,45 +22,22 @@ public class Reader {
         return scanner.nextLine();
     }
 
-    private Expression parseLine(String line){
-       line = line.replace(" ", "");
-
-        boolean isFirstSymbolMinus = false;
-        if (line.charAt(0)=='-'){
-            isFirstSymbolMinus = true;
-            line = line.substring(1);
+    private ArrayList<String> parseLine(String line){
+        Pattern pattern1 = Pattern.compile("[^+\\d \\-.]");
+        Matcher matcher1 = pattern1.matcher (line);
+        while (matcher1.find()){
+            System.out.println(matcher1.group() + " " + matcher1.start());
         }
-
-        try {
-            int operatorIndex;
-
-            if (line.contains("+")) {
-                operatorIndex = line.indexOf("+");
-            } else if (line.contains("-")){
-                operatorIndex = line.indexOf("-");
-            } else if (line.contains("/")){
-                operatorIndex = line.indexOf("/");
-            } else if (line.contains("*")) {
-                operatorIndex = line.indexOf("*");
-            } else return null;
-
-                try {
-                    String operator = String.valueOf(line.charAt(operatorIndex));
-                    double firstNumber = Double.parseDouble(line.substring(0,operatorIndex));
-                    if (isFirstSymbolMinus) firstNumber *= -1;
-                    double secondNumber = Double.parseDouble(line.substring(operatorIndex+1));
-
-                    if (secondNumber==0 && operator.equals("/")) {
-                        System.out.println("Division by 0 is not possible");
-                        return null;
-                    }
-
-                    return new Expression(firstNumber, secondNumber, operator);
-                } catch (Exception e) {
-                    return null;
-                }
-        } catch (Exception e) {
+        if (matcher1.find()){
             return null;
         }
+
+        Pattern pattern2 = Pattern.compile ("\\d+\\.\\d+|\\d+|[+\\-]");
+        Matcher matcher2 = pattern2.matcher(line);
+        ArrayList<String> list = new ArrayList<>();
+        while (matcher2.find()){
+            list.add(matcher2.group());
+        }
+        return list;
     }
 }
