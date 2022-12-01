@@ -14,17 +14,17 @@ public class Calculator {
         while (!line.equals("n")) {
             position = 0;
             expression = reader.startReader();
-            printTheResult(calculate());
+            printTheResult(calculate(expression));
             System.out.println("\nContinue y/n?");
             line = scanner.next();
         }
     }
 
-    private double calculate() {
+    private double calculate(ArrayList<String> expression) {
 
         firstNumberIsNegative = expression.get(0).equals("-");
 
-        double first = multiply();
+        double first = multiply(expression);
 
         while (position < expression.size()) {
             String operator = expression.get(position);
@@ -33,7 +33,7 @@ public class Calculator {
             } else {
                 position++;
             }
-            double second = multiply();
+            double second = multiply(expression);
 
             if (operator.equals("+")) {
                 first += second;
@@ -44,7 +44,7 @@ public class Calculator {
         return first;
     }
 
-    private double multiply() {
+    private double multiply(ArrayList<String> expression) {
         double first;
         if (firstNumberIsNegative) {
             expression.remove(expression.get(0));
