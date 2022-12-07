@@ -152,20 +152,18 @@ class CalculatorReaderTest {
         Assertions.assertFalse((Boolean) hasDivisionByZeroMethod.invoke(reader, expression), "Array has division by 0");
     }
 
-    /*  @Test
-    public void expressionInputTest() throws IOException {
-        try {
-            Method method = CalculatorReader.class.getDeclaredMethod("expressionInput", null);
-            method.setAccessible(true);
-            String userInput = "10.10";
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(userInput.getBytes());
-            System.setIn(byteArrayInputStream);
-            Assertions.assertEquals("10.10", method.invoke(reader));
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
+/*    @Test
+    public void expressionInputTest() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method method = CalculatorReader.class.getDeclaredMethod("expressionInput", null);
+        method.setAccessible(true);
 
+        //When
+        String userInput = "10.10";
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(userInput.getBytes());
+        System.setIn(byteArrayInputStream);
+
+        //Then
+        Assertions.assertEquals("10.10", method.invoke(reader));
+    }*/
 }
