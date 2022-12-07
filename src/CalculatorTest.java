@@ -1,6 +1,5 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -60,8 +59,9 @@ class CalculatorTest {
         }
     }
 
-    @Test
-    public void printTheResultTest() {
+    @ParameterizedTest
+    @CsvSource({"10", "10.0"})
+    public void printTheResultTest(double result) {
         try {
             //Given
             Method printTheResultTestMethod = Calculator.class.getDeclaredMethod("printTheResult", double.class);
@@ -74,31 +74,7 @@ class CalculatorTest {
             System.setOut(new PrintStream(outputStream));
 
             //Then
-            printTheResultTestMethod.invoke(calculator, 10);
-            Assertions.assertEquals(userInput, outputStream.toString(), "printTheResult Method shows wrong result");
-            System.setOut(standardOut);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
-    public void printTheResultTest2() {
-        try {
-            //Given
-            Method printTheResultTestMethod = Calculator.class.getDeclaredMethod("printTheResult", double.class);
-            printTheResultTestMethod.setAccessible(true);
-            PrintStream standardOut = System.out;
-
-            //When
-            String userInput = "Your result is: 10";
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            System.setOut(new PrintStream(outputStream));
-
-            //Then
-            printTheResultTestMethod.invoke(calculator, 10.0);
+            printTheResultTestMethod.invoke(calculator, result);
             Assertions.assertEquals(userInput, outputStream.toString(), "printTheResult Method shows wrong result");
             System.setOut(standardOut);
         } catch (NoSuchMethodException e) {
