@@ -6,10 +6,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 class CalculatorReaderTest {
@@ -17,7 +20,58 @@ class CalculatorReaderTest {
 
     @BeforeAll
     public static void prepareData() {
-        reader = new CalculatorReader();
+        reader = new CalculatorReader(new Scanner(System.in));
+    }
+
+    @Test
+    public void startReaderTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method startReaderMethod = CalculatorReader.class.getDeclaredMethod("startReader", null);
+        startReaderMethod.setAccessible(true);
+
+        String input = "20-30+50";
+        Scanner scanner = new Scanner(input);
+        CalculatorReader inputReader = new CalculatorReader(scanner);
+
+        ArrayList<String> expressionList = new ArrayList<>(Arrays.asList("20", "-", "30", "+", "50"));
+
+        //Then
+        Assertions.assertEquals(expressionList, startReaderMethod.invoke(inputReader));
+    }
+
+    @Test
+    public void startReaderTest2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method startReaderMethod = CalculatorReader.class.getDeclaredMethod("startReader", null);
+        startReaderMethod.setAccessible(true);
+
+        String input = "20-30+a";
+        Scanner scanner = new Scanner(input);
+        CalculatorReader inputReader = new CalculatorReader(scanner);
+
+        PrintStream standardOut = System.out;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        //When
+        System.setOut(new PrintStream(outputStream));
+        startReaderMethod.invoke(inputReader);
+
+        //Then
+        Assertions.assertEquals(outputStream.toString(), "Enter your math expression\nYour expression is not correct\nEnter your math expression");
+        System.setOut(standardOut);
+    }
+
+    @Test
+    public void expressionInputTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        String input = "20-30+50";
+        Scanner scanner = new Scanner(input);
+        CalculatorReader inputReader = new CalculatorReader(scanner);
+        Method expressionInputMethod = CalculatorReader.class.getDeclaredMethod("expressionInput", null);
+        expressionInputMethod.setAccessible(true);
+
+        //Then
+        Assertions.assertEquals("20-30+50", expressionInputMethod.invoke(inputReader));
     }
 
     @ParameterizedTest
@@ -90,7 +144,8 @@ class CalculatorReaderTest {
                 Arguments.of((Object) new String[]{"+", "4", "-", "3", "+", "2"}),
                 Arguments.of((Object) new String[]{"4", "-", "3", "3", "-", "2"}),
                 Arguments.of((Object) new String[]{"-", "3", "5"}),
-                Arguments.of((Object) new String[]{"-", "3", "*", "*", "2", "+", "3"})
+                Arguments.of((Object) new String[]{"-", "3", "*", "*", "2", "+", "3"}),
+                Arguments.of((Object) new String[]{})
         );
     }
 
@@ -151,19 +206,4 @@ class CalculatorReaderTest {
         //Then
         Assertions.assertFalse((Boolean) hasDivisionByZeroMethod.invoke(reader, expression), "Array has division by 0");
     }
-
-/*    @Test
-    public void expressionInputTest() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //Given
-        Method method = CalculatorReader.class.getDeclaredMethod("expressionInput", null);
-        method.setAccessible(true);
-
-        //When
-        String userInput = "10.10";
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(userInput.getBytes());
-        System.setIn(byteArrayInputStream);
-
-        //Then
-        Assertions.assertEquals("10.10", method.invoke(reader));
-    }*/
 }

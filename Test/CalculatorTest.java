@@ -1,13 +1,17 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.stream.Stream;
 
 class CalculatorTest {
     public static Calculator calculator;
@@ -25,7 +29,7 @@ class CalculatorTest {
             Method calculateMethod = Calculator.class.getDeclaredMethod("calculate", ArrayList.class);
             calculateMethod.setAccessible(true);
 
-            CalculatorReader reader = new CalculatorReader();
+            CalculatorReader reader = new CalculatorReader(new Scanner(System.in));
             Method parseLineMethod = CalculatorReader.class.getDeclaredMethod("parseLine", String.class);
             parseLineMethod.setAccessible(true);
 
@@ -46,7 +50,7 @@ class CalculatorTest {
             Method multiplyTestMethod = Calculator.class.getDeclaredMethod("multiply", ArrayList.class);
             multiplyTestMethod.setAccessible(true);
 
-            CalculatorReader reader = new CalculatorReader();
+            CalculatorReader reader = new CalculatorReader(new Scanner(System.in));
             Method parseLineMethod = CalculatorReader.class.getDeclaredMethod("parseLine", String.class);
             parseLineMethod.setAccessible(true);
 
@@ -59,9 +63,17 @@ class CalculatorTest {
         }
     }
 
+    public static Stream<Arguments> dataForPrintTheResultTest() {
+        return Stream.of(
+                Arguments.of(10, "Your result is: 10"),
+                Arguments.of(10.0, "Your result is: 10"),
+                Arguments.of(23.3, "Your result is: 23.3")
+        );
+    }
+
     @ParameterizedTest
-    @CsvSource({"10", "10.0"})
-    public void printTheResultTest(double result) {
+    @MethodSource({"dataForPrintTheResultTest"})
+    public void printTheResultTest(double number, String result) {
         try {
             //Given
             Method printTheResultTestMethod = Calculator.class.getDeclaredMethod("printTheResult", double.class);
@@ -69,13 +81,12 @@ class CalculatorTest {
             PrintStream standardOut = System.out;
 
             //When
-            String userInput = "Your result is: 10";
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             System.setOut(new PrintStream(outputStream));
 
             //Then
-            printTheResultTestMethod.invoke(calculator, result);
-            Assertions.assertEquals(userInput, outputStream.toString(), "printTheResult Method shows wrong result");
+            printTheResultTestMethod.invoke(calculator, number);
+            Assertions.assertEquals(result, outputStream.toString(), "printTheResult Method shows wrong result");
             System.setOut(standardOut);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();

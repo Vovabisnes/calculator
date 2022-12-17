@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Calculator {
-    private final CalculatorReader reader = new CalculatorReader();
     private final Scanner scanner = new Scanner(System.in);
+    private final CalculatorReader reader = new CalculatorReader(new Scanner(System.in));
     private ArrayList<String> expression;
     private int position;
     private boolean firstNumberIsNegative;

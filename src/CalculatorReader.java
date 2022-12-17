@@ -4,7 +4,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CalculatorReader {
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
+
+    public CalculatorReader(Scanner scanner) {
+        this.scanner = scanner;
+    }
 
     public ArrayList<String> startReader() {
         while (true) {
@@ -23,14 +27,14 @@ public class CalculatorReader {
     }
 
     private ArrayList<String> parseLine(String line) {
-        Pattern pattern1 = Pattern.compile("[^+\\d \\-.*/]");
-        Matcher matcher1 = pattern1.matcher(line);
+        Pattern wrongSymbolsPattern = Pattern.compile("[^+\\d \\-.*/]");
+        Matcher matcher1 = wrongSymbolsPattern.matcher(line);
         if (matcher1.find()) {
             return null;
         }
 
-        Pattern pattern2 = Pattern.compile("\\d+\\.\\d+|\\d+|[+\\-*/]");
-        Matcher matcher2 = pattern2.matcher(line);
+        Pattern NumberAndOperatorsPattern = Pattern.compile("\\d+\\.\\d+|\\d+|[+\\-*/]");
+        Matcher matcher2 = NumberAndOperatorsPattern.matcher(line);
         ArrayList<String> expression = new ArrayList<>();
         while (matcher2.find()) {
             expression.add(matcher2.group());
@@ -80,8 +84,8 @@ public class CalculatorReader {
     }
 
     private boolean isNumber(String line) {
-        Pattern pattern1 = Pattern.compile("[^+-/*]");
-        Matcher matcher1 = pattern1.matcher(line);
+        Pattern notOperatorPattern = Pattern.compile("[^+-/*]");
+        Matcher matcher1 = notOperatorPattern.matcher(line);
         return matcher1.find();
     }
 
