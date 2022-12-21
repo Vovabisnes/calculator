@@ -27,14 +27,12 @@ public class CalculatorReader {
     }
 
     private ArrayList<String> parseLine(String line) {
-        Pattern wrongSymbolsPattern = Pattern.compile("[^+\\d \\-.*/]");
-        Matcher matcher1 = wrongSymbolsPattern.matcher(line);
-        if (matcher1.find()) {
+
+        if (Pattern.compile("[^+\\d \\-.*/]").matcher(line).find()) {
             return null;
         }
 
-        Pattern NumberAndOperatorsPattern = Pattern.compile("\\d+\\.\\d+|\\d+|[+\\-*/]");
-        Matcher matcher2 = NumberAndOperatorsPattern.matcher(line);
+        Matcher matcher2 = Pattern.compile("\\d+\\.\\d+|\\d+|[+\\-*/]").matcher(line);
         ArrayList<String> expression = new ArrayList<>();
         while (matcher2.find()) {
             expression.add(matcher2.group());
@@ -48,11 +46,7 @@ public class CalculatorReader {
     }
 
     private int countSymbols(ArrayList<String> expression) {
-        int count = 0;
-        for (String symbol : expression) {
-            count += symbol.length();
-        }
-        return count;
+        return expression.stream().mapToInt(String::length).sum();
     }
 
     private boolean hasRightSymbolsOrder(ArrayList<String> expression) {
@@ -84,9 +78,7 @@ public class CalculatorReader {
     }
 
     private boolean isNumber(String line) {
-        Pattern notOperatorPattern = Pattern.compile("[^+-/*]");
-        Matcher matcher1 = notOperatorPattern.matcher(line);
-        return matcher1.find();
+        return Pattern.compile("[^+-/*]").matcher(line).find();
     }
 
     private boolean hasDivisionByZero(ArrayList<String> expression) {
