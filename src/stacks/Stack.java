@@ -8,9 +8,9 @@ public class Stack {
         stack = new String[size];
     }
 
-    public void push(String element) throws IllegalAccessException {
+    public void push(String element) throws IllegalArgumentException {
         if (pointer == stack.length) {
-            throw new IllegalAccessException("Stack is full");
+            throw new IllegalArgumentException("Stack is full");
         }
         stack[pointer] = element;
         pointer++;
@@ -34,4 +34,5 @@ public class Stack {
     public boolean isEmpty(){
         return pointer == 0 && stack[0] == null;
     }
+
 }
