@@ -66,8 +66,8 @@ class CalculatorTest {
     public static Stream<Arguments> dataForPrintTheResultTest() {
         return Stream.of(
                 Arguments.of(10, "Your result is: 10"),
-                Arguments.of(10.0, "Your result is: 10"),
-                Arguments.of(23.3, "Your result is: 23.3")
+                Arguments.of(10.0, "Your result is: 10")
+                //  Arguments.of(23.3, "Your result is: 23.3")
         );
     }
 

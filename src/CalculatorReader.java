@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 public class CalculatorReader {
     private final Scanner scanner;
@@ -11,14 +12,15 @@ public class CalculatorReader {
     }
 
     public ArrayList<String> startReader() {
-        while (true) {
-            ArrayList<String> expression = parseLine(expressionInput());
+        ArrayList<String> expression;
+        do {
+            expression = parseLine(expressionInput());
             if (expression == null) {
-                System.out.println("Your expression is not correct");
-            } else {
-                return expression;
+                System.out.println("Your expression is not in correct form");
             }
-        }
+        } while (expression == null);
+
+        return expression;
     }
 
     private String expressionInput() {
@@ -32,60 +34,54 @@ public class CalculatorReader {
             return null;
         }
 
-        Matcher matcher2 = Pattern.compile("\\d+\\.\\d+|\\d+|[+\\-*/]").matcher(line);
+        Matcher matcher = Pattern.compile("\\d+\\.\\d+|\\d+|[+\\-*/]").matcher(line);
         ArrayList<String> expression = new ArrayList<>();
-        while (matcher2.find()) {
-            expression.add(matcher2.group());
+        while (matcher.find()) {
+            expression.add(matcher.group());
         }
 
-        line = line.replace(" ", "");
-        if (line.length() != countSymbols(expression) || hasDivisionByZero(expression) || !hasRightSymbolsOrder(expression))
+        if (isWrongExpression(expression) || hasWrongAmountOfSymbols(expression, line))
             return null;
 
         return expression;
     }
 
-    private int countSymbols(ArrayList<String> expression) {
-        return expression.stream().mapToInt(String::length).sum();
-    }
-
-    private boolean hasRightSymbolsOrder(ArrayList<String> expression) {
-        if (expression.isEmpty()) {
-            return false;
-        } else {
-            if (!isNumber(expression.get(0)) && !expression.get(0).equals("-")) {
-                return false;
-            } else if (isNumber(expression.get(0))) {
-                for (int i = 1; i < expression.size(); i++) {
-                    if ((i % 2 != 0 && isNumber(expression.get(i)) || (i % 2 == 0 && !isNumber(expression.get(i))))) {
-                        return false;
-                    }
-                }
-            } else if (!isNumber(expression.get(0))) {
-                if (expression.size() == 2 && isNumber(expression.get(1))) return true;
-
-                if (expression.size() < 4) {
-                    return false;
-                }
-                for (int i = 1; i < expression.size(); i++) {
-                    if ((i % 2 != 0 && !isNumber(expression.get(i)) || (i % 2 == 0 && isNumber(expression.get(i))))) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-    }
-
-    private boolean isNumber(String line) {
-        return Pattern.compile("[^+-/*]").matcher(line).find();
+    private boolean isWrongExpression(ArrayList<String> expression) {
+        return hasNotRightSymbolsOrder(expression) || hasWrongOperatorAtTheBeginning(expression) || hasDivisionByZero(expression);
     }
 
     private boolean hasDivisionByZero(ArrayList<String> expression) {
-        for (int i = 0; i < expression.size(); i++) {
-            if (expression.get(i).equals("/") && expression.get(i + 1).equals("0"))
-                return true;
+        return IntStream.range(0, expression.size()).anyMatch(index -> expression.get(index).equals("/") &&
+                expression.get(index + 1).equals("0"));
+    }
+
+    private boolean hasNotRightSymbolsOrder(ArrayList<String> expression) {
+        if (isNumber(expression.get(0))) {
+            return IntStream.range(1, expression.size()).anyMatch(symbolIndex ->
+                    (symbolIndex % 2 != 0 && isNumber(expression.get(symbolIndex))) ||
+                            symbolIndex % 2 == 0 && !isNumber(expression.get(symbolIndex)));
+        } else {
+            return IntStream.range(1, expression.size()).anyMatch(symbolIndex ->
+                    (symbolIndex % 2 != 0 && !isNumber(expression.get(symbolIndex))) ||
+                            symbolIndex % 2 == 0 && isNumber(expression.get(symbolIndex)));
         }
-        return false;
+    }
+
+    private boolean hasWrongOperatorAtTheBeginning(ArrayList<String> expression) {
+        return !isNumber(expression.get(0)) && !expression.get(0).equals("-");
+    }
+
+    private boolean hasWrongAmountOfSymbols(ArrayList<String> expression, String line) {
+        int amountOfSymbolsInExpression = expression.stream().mapToInt(String::length).sum();
+        return (!isNumber(expression.get(0)) && expression.size() < 4) ||
+                !isNumber(expression.get(expression.size() - 1)) ||
+                amountOfSymbolsInExpression != line.replace(" ", "").length();
+    }
+
+    private boolean isNumber(String line) {
+        if (line.startsWith("0")) {
+            return !Pattern.compile("0\\d+").matcher(line).find();
+        }
+        return Pattern.compile("[^+-/*]").matcher(line).find();
     }
 }

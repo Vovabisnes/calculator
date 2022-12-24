@@ -6,8 +6,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ class CalculatorReaderTest {
         Assertions.assertEquals(expressionList, startReaderMethod.invoke(inputReader));
     }
 
-    @Test
+/*    @Test
     public void startReaderTest2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //Given
         Method startReaderMethod = CalculatorReader.class.getDeclaredMethod("startReader", null);
@@ -60,7 +58,7 @@ class CalculatorReaderTest {
         //Then
         Assertions.assertEquals(outputStream.toString(), "Enter your math expression\nYour expression is not correct\nEnter your math expression");
         System.setOut(standardOut);
-    }
+    }*/
 
     @Test
     public void expressionInputTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -97,79 +95,46 @@ class CalculatorReaderTest {
         Assertions.assertNull(parseLineMethod.invoke(reader, expression), "Your expression is correct");
     }
 
-    public static Stream<Arguments> dataForCountSymbolsTest() {
+    public static Stream<Arguments> dataForIsWrongExpression() {
         return Stream.of(
-                Arguments.of(new ArrayList<>(Arrays.asList("1.35", "+", "32", "/", "434", "-", "18.4")), 16),
-                Arguments.of(new ArrayList<>(List.of("3")), 1)
-        );
+                Arguments.of(new ArrayList<>(Arrays.asList("1.3", "+", "/", "4", "-", "8.4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("4", "4", "*", "2", "/", "4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "4", "+", "4", "4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "3", "-", "*", "+", "3", "/", "3.5"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("+", "4", "+", "4", "4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("*", "4", "+", "4", "4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "4", "+", "4", "/", "0"))));
     }
 
     @ParameterizedTest
-    @MethodSource({"dataForCountSymbolsTest"})
-    public void countSymbolsTest(ArrayList<String> expression, int result) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    @MethodSource({"dataForIsWrongExpression"})
+    public void isWrongExpressionTest(ArrayList<String> expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //Given
-        Method countSymbolsMethod = CalculatorReader.class.getDeclaredMethod("countSymbols", ArrayList.class);
-        countSymbolsMethod.setAccessible(true);
+        Method isWrongExpressionMethod = CalculatorReader.class.getDeclaredMethod("isWrongExpression", ArrayList.class);
+        isWrongExpressionMethod.setAccessible(true);
 
         //Then
-        Assertions.assertEquals(countSymbolsMethod.invoke(reader, expression), result, "wrong amount of symbols");
+        Assertions.assertTrue((Boolean) isWrongExpressionMethod.invoke(reader, expression), "expression is correct");
     }
 
-    public static Stream<Arguments> dataForHasRightSymbolsOrderTest() {
+    public static Stream<Arguments> dataForIsRightExpression() {
         return Stream.of(
-                Arguments.of(new ArrayList<>(Arrays.asList("1.3", "+", "3", "/", "4", "-", "8.4"))),
-                Arguments.of(new ArrayList<>(Arrays.asList("4", "-", "3", "*", "2", "/", "4"))),
-                Arguments.of(new ArrayList<>(Arrays.asList("-", "4"))),
-                Arguments.of(new ArrayList<>(Arrays.asList("-", "3", "*", "2", "+", "3", "/", "3.5"))));
+                Arguments.of(new ArrayList<>(Arrays.asList("1.3", "+", "4", "-", "4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "4", "+", "4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("30.5", "-", "40.3", "*", "0"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("200", "*", "2.3", "/", "1"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "4", "+", "4", "/", "1000.3333"))));
     }
 
     @ParameterizedTest
-    @MethodSource({"dataForHasRightSymbolsOrderTest"})
-    public void hasRightSymbolsOrderTest(ArrayList<String> expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    @MethodSource({"dataForIsRightExpression"})
+    public void isRightExpressionTest(ArrayList<String> expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //Given
-        Method hasRightSymbolsOrderMethod = CalculatorReader.class.getDeclaredMethod("hasRightSymbolsOrder", ArrayList.class);
-        hasRightSymbolsOrderMethod.setAccessible(true);
+        Method isWrongExpressionMethod = CalculatorReader.class.getDeclaredMethod("isWrongExpression", ArrayList.class);
+        isWrongExpressionMethod.setAccessible(true);
 
         //Then
-        Assertions.assertTrue((Boolean) hasRightSymbolsOrderMethod.invoke(reader, expression), "It is not right math expression");
-    }
-
-    public static Stream<Arguments> dataForHasRightSymbolsOrderTest2() {
-        return Stream.of(
-                Arguments.of(new ArrayList<>(Arrays.asList("+", "4", "-", "3", "+", "2"))),
-                Arguments.of(new ArrayList<>(Arrays.asList("4", "-", "3", "3", "-", "2"))),
-                Arguments.of(new ArrayList<>(Arrays.asList("-", "3", "5"))),
-                Arguments.of(new ArrayList<>(Arrays.asList("-", "3", "*", "*", "2", "+", "3"))),
-                Arguments.of(new ArrayList<>(List.of())));
-    }
-
-    @ParameterizedTest
-    @MethodSource({"dataForHasRightSymbolsOrderTest2"})
-    public void hasRightSymbolsOrderTest2(ArrayList<String> expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //Given
-        Method hasRightSymbolsOrderMethod = CalculatorReader.class.getDeclaredMethod("hasRightSymbolsOrder", ArrayList.class);
-        hasRightSymbolsOrderMethod.setAccessible(true);
-
-        //Then
-        Assertions.assertFalse((Boolean) hasRightSymbolsOrderMethod.invoke(reader, expression), "expression is not empty");
-    }
-
-    @ParameterizedTest
-    @CsvSource({"1", "1.0", "400", "800.999"})
-    public void isNumberTest(String symbol) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method isNumberMethod = CalculatorReader.class.getDeclaredMethod("isNumber", String.class);
-        isNumberMethod.setAccessible(true);
-
-        Assertions.assertTrue((Boolean) isNumberMethod.invoke(reader, symbol), "it contains operators");
-    }
-
-    @ParameterizedTest
-    @CsvSource({"/", "-", "*", "+"})
-    public void isNumberTest2(String symbol) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method isNumberMethod = CalculatorReader.class.getDeclaredMethod("isNumber", String.class);
-        isNumberMethod.setAccessible(true);
-
-        Assertions.assertFalse((Boolean) isNumberMethod.invoke(reader, symbol), "it contains numbers");
+        Assertions.assertFalse((Boolean) isWrongExpressionMethod.invoke(reader, expression), "expression is not correct");
     }
 
     @Test
@@ -186,7 +151,7 @@ class CalculatorReaderTest {
     }
 
     @Test
-    public void hasDivisionByZeroTest2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void hasNotDivisionByZeroTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //Given
         Method hasDivisionByZeroMethod = CalculatorReader.class.getDeclaredMethod("hasDivisionByZero", ArrayList.class);
         hasDivisionByZeroMethod.setAccessible(true);
@@ -196,5 +161,115 @@ class CalculatorReaderTest {
 
         //Then
         Assertions.assertFalse((Boolean) hasDivisionByZeroMethod.invoke(reader, expression), "Array has division by 0");
+    }
+
+    public static Stream<Arguments> dataForHasRightSymbolsOrderTest() {
+        return Stream.of(
+                Arguments.of(new ArrayList<>(Arrays.asList("1.3", "+", "3", "/", "4", "-", "8.4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("4", "-", "3", "*", "2", "/", "4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "4"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "3", "*", "2", "+", "3", "/", "3.5"))));
+    }
+
+    @ParameterizedTest
+    @MethodSource({"dataForHasRightSymbolsOrderTest"})
+    public void hasRightSymbolsOrderTest(ArrayList<String> expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method hasNotRightSymbolsOrderMethod = CalculatorReader.class.getDeclaredMethod("hasNotRightSymbolsOrder", ArrayList.class);
+        hasNotRightSymbolsOrderMethod.setAccessible(true);
+
+        //Then
+        Assertions.assertFalse((Boolean) hasNotRightSymbolsOrderMethod.invoke(reader, expression), "expression is not correct");
+    }
+
+    public static Stream<Arguments> dataForHasNotRightSymbolsOrderTest() {
+        return Stream.of(
+                Arguments.of(new ArrayList<>(Arrays.asList("4", "-", "3", "3", "-", "2"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("4", "-", "-", "3", "-", "2"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "3", "5"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "3", "*", "*", "2", "+", "3"))));
+    }
+
+    @ParameterizedTest
+    @MethodSource({"dataForHasNotRightSymbolsOrderTest"})
+    public void hasNotRightSymbolsOrderTest(ArrayList<String> expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method hasNotRightSymbolsOrderMethod = CalculatorReader.class.getDeclaredMethod("hasNotRightSymbolsOrder", ArrayList.class);
+        hasNotRightSymbolsOrderMethod.setAccessible(true);
+
+        //Then
+        Assertions.assertTrue((Boolean) hasNotRightSymbolsOrderMethod.invoke(reader, expression), "expression is correct");
+    }
+
+    public static Stream<Arguments> dataForHasWrongOperatorAtTheBeginning() {
+        return Stream.of(
+                Arguments.of(new ArrayList<>(Arrays.asList("+", "33"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("/", "33"))),
+                Arguments.of(new ArrayList<>(Arrays.asList("*", "33"))),
+                Arguments.of(new ArrayList<>(List.of("*"))));
+    }
+
+    @ParameterizedTest
+    @MethodSource({"dataForHasWrongOperatorAtTheBeginning"})
+    public void hasWrongOperatorAtTheBeginningTest(ArrayList<String> expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method hasWrongOperatorAtTheBeginningMethod = CalculatorReader.class.getDeclaredMethod("hasWrongOperatorAtTheBeginning", ArrayList.class);
+        hasWrongOperatorAtTheBeginningMethod.setAccessible(true);
+
+        //Then
+        Assertions.assertTrue((Boolean) hasWrongOperatorAtTheBeginningMethod.invoke(reader, expression), "expression has an correct operator at the beginning");
+    }
+
+    public static Stream<Arguments> dataForHasNotWrongOperatorAtTheBeginning() {
+        return Stream.of(
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "33"))),
+                Arguments.of(new ArrayList<>(List.of("400.32"))));
+    }
+
+    @ParameterizedTest
+    @MethodSource({"dataForHasNotWrongOperatorAtTheBeginning"})
+    public void hasNotWrongOperatorAtTheBeginningTest(ArrayList<String> expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method hasWrongOperatorAtTheBeginningMethod = CalculatorReader.class.getDeclaredMethod("hasWrongOperatorAtTheBeginning", ArrayList.class);
+        hasWrongOperatorAtTheBeginningMethod.setAccessible(true);
+
+        //Then
+        Assertions.assertFalse((Boolean) hasWrongOperatorAtTheBeginningMethod.invoke(reader, expression), "expression has wrong operator at the beginning");
+    }
+
+    public static Stream<Arguments> dataForHasWrongAmountOfSymbols() {
+        return Stream.of(
+                Arguments.of(new ArrayList<>(Arrays.asList("-", "33", "+")), "-3+"),
+                Arguments.of(new ArrayList<>(Arrays.asList("2", "-")), "2-"),
+                Arguments.of(new ArrayList<>(Arrays.asList("400", "-", "20", "+", "30.0", "*")), "400-20+30.0 *"));
+    }
+
+    @ParameterizedTest
+    @MethodSource({"dataForHasWrongAmountOfSymbols"})
+    public void hasWrongAmountOfSymbols(ArrayList<String> expression, String line) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method hasWrongAmountOfSymbols = CalculatorReader.class.getDeclaredMethod("hasWrongAmountOfSymbols", ArrayList.class, String.class);
+        hasWrongAmountOfSymbols.setAccessible(true);
+
+        //Then
+        Assertions.assertTrue((Boolean) hasWrongAmountOfSymbols.invoke(reader, expression, line), "expression is correct");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"1", "1.0", "400", "800.999", "0.33", "0.3355", "0"})
+    public void isNumberTest(String symbol) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method isNumberMethod = CalculatorReader.class.getDeclaredMethod("isNumber", String.class);
+        isNumberMethod.setAccessible(true);
+
+        Assertions.assertTrue((Boolean) isNumberMethod.invoke(reader, symbol), "it contains operators");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"/", "-", "*", "+", "012", "000"})
+    public void isNotNumberTest(String symbol) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method isNumberMethod = CalculatorReader.class.getDeclaredMethod("isNumber", String.class);
+        isNumberMethod.setAccessible(true);
+
+        Assertions.assertFalse((Boolean) isNumberMethod.invoke(reader, symbol), "it contains numbers");
     }
 }
