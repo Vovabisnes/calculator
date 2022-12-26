@@ -6,17 +6,20 @@ import java.util.stream.IntStream;
 
 public class CalculatorReader {
     private final Scanner scanner;
+    private final Pattern wrongSymbolPattern = Pattern.compile("[^+\\d \\-.*/]");
+    private final Pattern numberAndOperatorPattern = Pattern.compile("\\d+\\.\\d+|\\d+|[+\\-*/]");
 
     public CalculatorReader(Scanner scanner) {
         this.scanner = scanner;
     }
 
     public ArrayList<String> startReader() {
-        ArrayList<String> expression;
+        ArrayList<String> expression = null;
         do {
-            expression = parseLine(expressionInput());
-            if (expression == null) {
-                System.out.println("Your expression is not in correct form");
+            try {
+                expression = parseLine(expressionInput());
+            } catch (IllegalArgumentException exception) {
+                System.out.println(exception.getMessage());
             }
         } while (expression == null);
 
@@ -30,19 +33,26 @@ public class CalculatorReader {
 
     private ArrayList<String> parseLine(String line) {
 
-        if (Pattern.compile("[^+\\d \\-.*/]").matcher(line).find()) {
-            return null;
-        }
+        if (containsWrongSymbol(line)) throw new IllegalArgumentException("Your expression contains wrong symbols");
 
-        Matcher matcher = Pattern.compile("\\d+\\.\\d+|\\d+|[+\\-*/]").matcher(line);
+        ArrayList<String> expression = getArrayList(line);
+
+        if (isWrongExpression(expression) || hasWrongAmountOfSymbols(expression, line))
+            throw new IllegalArgumentException("Your expression is incorrect");
+
+        return expression;
+    }
+
+    private boolean containsWrongSymbol(String line) {
+        return wrongSymbolPattern.matcher(line).find();
+    }
+
+    private ArrayList<String> getArrayList(String line) {
+        Matcher matcher = numberAndOperatorPattern.matcher(line);
         ArrayList<String> expression = new ArrayList<>();
         while (matcher.find()) {
             expression.add(matcher.group());
         }
-
-        if (isWrongExpression(expression) || hasWrongAmountOfSymbols(expression, line))
-            return null;
-
         return expression;
     }
 
@@ -78,10 +88,10 @@ public class CalculatorReader {
                 amountOfSymbolsInExpression != line.replace(" ", "").length();
     }
 
-    private boolean isNumber(String line) {
-        if (line.startsWith("0")) {
-            return !Pattern.compile("0\\d+").matcher(line).find();
+    private boolean isNumber(String symbol) {
+        if (symbol.startsWith("0")) {
+            return !Pattern.compile("0\\d+").matcher(symbol).find();
         }
-        return Pattern.compile("[^+-/*]").matcher(line).find();
+        return Pattern.compile("[^+-/*]").matcher(symbol).find();
     }
 }

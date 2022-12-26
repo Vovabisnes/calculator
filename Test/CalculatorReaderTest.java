@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 class CalculatorReaderTest {
     public static CalculatorReader reader;
 
@@ -22,43 +24,40 @@ class CalculatorReaderTest {
         reader = new CalculatorReader(new Scanner(System.in));
     }
 
-    @Test
-    public void startReaderTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //Given
-        Method startReaderMethod = CalculatorReader.class.getDeclaredMethod("startReader", null);
-        startReaderMethod.setAccessible(true);
-
-        String input = "20-30+50";
-        Scanner scanner = new Scanner(input);
-        CalculatorReader inputReader = new CalculatorReader(scanner);
-
-        ArrayList<String> expressionList = new ArrayList<>(Arrays.asList("20", "-", "30", "+", "50"));
-
-        //Then
-        Assertions.assertEquals(expressionList, startReaderMethod.invoke(inputReader));
+    public static Stream<Arguments> dataForStartReaderTest() {
+        return Stream.of(
+                Arguments.of(new ArrayList<>(Arrays.asList("1.3", "+", "4", "-", "4")), "1.3+4-4"),
+                Arguments.of(new ArrayList<>(Arrays.asList("4", "*", "0", "+", "3")), "4*0+3"),
+                Arguments.of(new ArrayList<>(List.of("4")), "4"));
     }
 
-/*    @Test
-    public void startReaderTest2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    @ParameterizedTest
+    @MethodSource({"dataForStartReaderTest"})
+    public void startReaderTest(ArrayList<String> result, String input) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //Given
-        Method startReaderMethod = CalculatorReader.class.getDeclaredMethod("startReader", null);
+        Method startReaderMethod = CalculatorReader.class.getDeclaredMethod("startReader", (Class<?>[]) null);
         startReaderMethod.setAccessible(true);
 
-        String input = "20-30+a";
         Scanner scanner = new Scanner(input);
         CalculatorReader inputReader = new CalculatorReader(scanner);
 
-        PrintStream standardOut = System.out;
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        //When
-        System.setOut(new PrintStream(outputStream));
-        startReaderMethod.invoke(inputReader);
-
         //Then
-        Assertions.assertEquals(outputStream.toString(), "Enter your math expression\nYour expression is not correct\nEnter your math expression");
-        System.setOut(standardOut);
-    }*/
+        Assertions.assertEquals(result, startReaderMethod.invoke(inputReader), "you entered wrong expression");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"7/3-4a", "32+3 + 3? -3", "95=3"})
+    public void startReaderTest2(String input) throws NoSuchMethodException {
+        //Given
+        Method startReaderMethod = CalculatorReader.class.getDeclaredMethod("startReader", (Class<?>[]) null);
+        startReaderMethod.setAccessible(true);
+
+        Scanner scanner = new Scanner(input);
+        CalculatorReader inputReader = new CalculatorReader(scanner);
+
+        assertThrows(InvocationTargetException.class,
+                () -> startReaderMethod.invoke(inputReader));
+    }
 
     @Test
     public void expressionInputTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -66,33 +65,81 @@ class CalculatorReaderTest {
         String input = "20-30+50";
         Scanner scanner = new Scanner(input);
         CalculatorReader inputReader = new CalculatorReader(scanner);
-        Method expressionInputMethod = CalculatorReader.class.getDeclaredMethod("expressionInput", null);
+        Method expressionInputMethod = CalculatorReader.class.getDeclaredMethod("expressionInput", (Class<?>[]) null);
         expressionInputMethod.setAccessible(true);
 
         //Then
         Assertions.assertEquals("20-30+50", expressionInputMethod.invoke(inputReader));
     }
 
-    @ParameterizedTest
-    @CsvSource({"4.3+4-3*2+4.4-0/3", "-3  + 4 +9 *3 /10", "1.1-2.33*0", "-0-3", "3.000*10"})
-    public void parseLineTest(String expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        //Given
-        Method parseLineMethod = CalculatorReader.class.getDeclaredMethod("parseLine", String.class);
-        parseLineMethod.setAccessible(true);
-
-        //Then
-        Assertions.assertNotEquals(parseLineMethod.invoke(reader, expression), null, "Your expression is correct");
+    public static Stream<Arguments> dataForParseLineTest() {
+        return Stream.of(
+                Arguments.of(new ArrayList<>(Arrays.asList("1.3", "+", "4", "-", "4")), "1.3+4-4"),
+                Arguments.of(new ArrayList<>(Arrays.asList("4", "*", "0", "+", "3")), "4*0+3"),
+                Arguments.of(new ArrayList<>(List.of("4")), "4"));
     }
 
     @ParameterizedTest
-    @CsvSource({"4.3-2.34.4", "-10+4-2*b", "3*20.5-20/0", "3+4-5*3-5**3", "+4-4*19+3", "+2", "--290*3", "4*3-5.*2", "+-*", "a+b+c"})
-    public void parseLineTest2(String expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    @MethodSource({"dataForParseLineTest"})
+    public void parseLineTest(ArrayList<String> result, String expression) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //Given
         Method parseLineMethod = CalculatorReader.class.getDeclaredMethod("parseLine", String.class);
         parseLineMethod.setAccessible(true);
 
         //Then
-        Assertions.assertNull(parseLineMethod.invoke(reader, expression), "Your expression is correct");
+        Assertions.assertEquals(parseLineMethod.invoke(reader, expression), result, "Your ve got wrong Arraylist");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"4.3-2.34.4", "-10+4-2b", "3*20.5-20/0", "3+4-5*3-5**3", "+4-4*19+3", "+2", "--290*3", "4*3-5.*2", "+-*", "a+b+c"})
+    public void parseLineTest2(String expression) throws NoSuchMethodException {
+        //Given
+        Method parseLineMethod = CalculatorReader.class.getDeclaredMethod("parseLine", String.class);
+        parseLineMethod.setAccessible(true);
+
+        //Then
+        assertThrows(InvocationTargetException.class,
+                () -> parseLineMethod.invoke(reader, expression));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"7/3-4a", "32+3 + 3? -3", "95=3"})
+    public void containsWrongSymbolTest(String line) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method containsWrongSymbolMethod = CalculatorReader.class.getDeclaredMethod("containsWrongSymbol", String.class);
+        containsWrongSymbolMethod.setAccessible(true);
+
+        //Then
+        Assertions.assertTrue((Boolean) containsWrongSymbolMethod.invoke(reader, line), "line does not contain wrong symbols");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"7/3-43*3.0", "32+3 +3-3.3", "95-3"})
+    public void containsRightSymbolsTest(String line) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method containsWrongSymbolMethod = CalculatorReader.class.getDeclaredMethod("containsWrongSymbol", String.class);
+        containsWrongSymbolMethod.setAccessible(true);
+
+        //Then
+        Assertions.assertFalse((Boolean) containsWrongSymbolMethod.invoke(reader, line), "line does not contain wrong symbols");
+    }
+
+    public static Stream<Arguments> dataForGetArrayListTest() {
+        return Stream.of(
+                Arguments.of(new ArrayList<>(Arrays.asList("1.3", "+", "4", "-", "4")), "1.3+4-4"),
+                Arguments.of(new ArrayList<>(Arrays.asList("4", "*", "0", "+", "/", "4")), "4*0+/4"),
+                Arguments.of(new ArrayList<>(List.of("4")), "4"));
+    }
+
+    @ParameterizedTest
+    @MethodSource({"dataForGetArrayListTest"})
+    public void getArrayListTest(ArrayList<String> result, String line) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //Given
+        Method getArrayListMethod = CalculatorReader.class.getDeclaredMethod("getArrayList", String.class);
+        getArrayListMethod.setAccessible(true);
+
+        //Then
+        Assertions.assertEquals(getArrayListMethod.invoke(reader, line), result, "you have got wrong array");
     }
 
     public static Stream<Arguments> dataForIsWrongExpression() {
