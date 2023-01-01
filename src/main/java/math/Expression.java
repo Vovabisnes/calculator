@@ -1,30 +1,22 @@
-import java.util.ArrayList;
-import java.util.Scanner;
+package math;
 
-public class Calculator {
-    private final Scanner scanner = new Scanner(System.in);
-    private final CalculatorReader reader = new CalculatorReader(new Scanner(System.in));
-    private ArrayList<String> expression;
+import java.util.ArrayList;
+
+public class Expression implements Calculate {
+    private final ArrayList<String> expression;
     private int position;
     private boolean firstNumberIsNegative;
 
-    public void start(){
-        String line="";
-
-        while (!line.equals("n")) {
-            position = 0;
-            expression = reader.startReader();
-            printTheResult(calculate(expression));
-            System.out.println("\nContinue y/n?");
-            line = scanner.next();
-        }
+    public Expression(ArrayList<String> expression) {
+        this.expression = expression;
     }
 
-    private double calculate(ArrayList<String> expression) {
+    @Override
+    public double calculate() {
 
         firstNumberIsNegative = expression.get(0).equals("-");
 
-        double first = multiply(expression);
+        double first = multiply();
 
         while (position < expression.size()) {
             String operator = expression.get(position);
@@ -33,7 +25,7 @@ public class Calculator {
             } else {
                 position++;
             }
-            double second = multiply(expression);
+            double second = multiply();
 
             if (operator.equals("+")) {
                 first += second;
@@ -44,7 +36,8 @@ public class Calculator {
         return first;
     }
 
-    private double multiply(ArrayList<String> expression) {
+    @Override
+    public double multiply() {
         double first;
         if (firstNumberIsNegative) {
             expression.remove(expression.get(0));
@@ -68,14 +61,5 @@ public class Calculator {
             }
         }
         return first;
-    }
-
-    private void printTheResult(double number) {
-        String num = String.valueOf(number);
-        if (num.charAt(num.length() - 2) == '.' && num.charAt(num.length() - 1) == '0') {
-            System.out.printf("Your result is: %.0f", number);
-        } else {
-            System.out.println("Your result is: " + number);
-        }
     }
 }
