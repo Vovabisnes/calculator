@@ -1,7 +1,7 @@
 package math;
 
 
-public interface Calculate {
+public interface Calculatable {
     double calculate();
 
     double multiply();

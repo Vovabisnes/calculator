@@ -1,6 +1,6 @@
 package reader;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class CalculatorReader {
@@ -12,8 +12,8 @@ public class CalculatorReader {
         this.validator = validator;
     }
 
-    public ArrayList<String> startReader() {
-        ArrayList<String> expression = null;
+    public List<String> startReader() {
+        List<String> expression = null;
         do {
             System.out.println("Enter your math expression");
             try {

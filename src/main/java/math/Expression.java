@@ -1,13 +1,13 @@
 package math;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class Expression implements Calculate {
-    private final ArrayList<String> expression;
+public class Expression implements Calculatable {
+    private final List<String> expression;
     private int position;
     private boolean firstNumberIsNegative;
 
-    public Expression(ArrayList<String> expression) {
+    public Expression(List<String> expression) {
         this.expression = expression;
     }
 
@@ -22,16 +22,12 @@ public class Expression implements Calculate {
             String operator = expression.get(position);
             if (!operator.equals("+") && !operator.equals("-")) {
                 break;
-            } else {
-                position++;
             }
+
+            position++;
             double second = multiply();
 
-            if (operator.equals("+")) {
-                first += second;
-            } else {
-                first -= second;
-            }
+            first = operator.equals("+") ? first + second : first - second;
         }
         return first;
     }
@@ -50,15 +46,12 @@ public class Expression implements Calculate {
             String operator = expression.get(position);
             if (!operator.equals("*") && !operator.equals("/")) {
                 break;
-            } else {
-                position++;
             }
+
+            position++;
             double second = Double.parseDouble(expression.get(position++));
-            if (operator.equals("*")) {
-                first *= second;
-            } else {
-                first /= second;
-            }
+
+            first = operator.equals("*") ? first * second : first / second;
         }
         return first;
     }

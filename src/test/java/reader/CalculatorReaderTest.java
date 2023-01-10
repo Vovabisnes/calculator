@@ -8,6 +8,7 @@ import org.junit.jupiter.api.function.Executable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +35,7 @@ class CalculatorReaderTest {
         when(validator.parseLine(anyString())).thenReturn(new ArrayList<>(Arrays.asList("30", "-", "20", "*", "3.3")));
 
         //when
-        ArrayList<String> actual = calculatorReader.startReader();
+        List<String> actual = calculatorReader.startReader();
 
         //then
         assertEquals(expected, actual);

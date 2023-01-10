@@ -18,7 +18,7 @@ class ExpressionTest {
     class calculateTests {
         static Stream<Arguments> dataFor_Should_CalculateCorrectResult_When_CorrectInput() {
             return Stream.of(
-                    Arguments.of(new ArrayList<>(Arrays.asList("4", "*", "0", "+", "3")), 3),
+                    Arguments.of(new ArrayList<>(Arrays.asList("4", "*", "0", "+", "3")), 3),//List.of
                     Arguments.of(new ArrayList<>(Arrays.asList("2", "/", "4", "-", "1")), -0.5),
                     Arguments.of(new ArrayList<>(Arrays.asList("50", "/", "0.1")), 500.0),
                     Arguments.of(new ArrayList<>(List.of("4")), 4));
@@ -26,7 +26,7 @@ class ExpressionTest {
 
         @ParameterizedTest
         @MethodSource({"dataFor_Should_CalculateCorrectResult_When_CorrectInput"})
-        void should_CalculateCorrectResult_When_CorrectInput(ArrayList<String> expressionList, double excepted) {
+        void should_CalculateCorrectResult_When_CorrectInput(List<String> expressionList, double excepted) {
             //Given
             Expression expression = new Expression(expressionList);
 
@@ -43,14 +43,14 @@ class ExpressionTest {
     class multiplyTests {
         static Stream<Arguments> dataFor_Should_MultiplyCorrectResult_When_CorrectInput() {
             return Stream.of(
-                    Arguments.of(new ArrayList<>(Arrays.asList("4", "*", "0")), 0),
-                    Arguments.of(new ArrayList<>(Arrays.asList("2", "/", "4", "*", "1")), 0.5),
-                    Arguments.of(new ArrayList<>(Arrays.asList("50", "/", "0.1")), 500.0));
+                    Arguments.of(List.of("4", "*", "0"), 0),
+                    Arguments.of(List.of("2", "/", "4", "*", "1"), 0.5),
+                    Arguments.of(List.of("50", "/", "0.1"), 500.0));
         }
 
         @ParameterizedTest
         @MethodSource({"dataFor_Should_MultiplyCorrectResult_When_CorrectInput"})
-        void should_MultiplyCorrectResult_When_CorrectInput(ArrayList<String> expressionList, double excepted) {
+        void should_MultiplyCorrectResult_When_CorrectInput(List<String> expressionList, double excepted) {
             //Given
             Expression expression = new Expression(expressionList);
 

@@ -5,23 +5,26 @@ import reader.Validator;
 import java.util.Scanner;
 
 public class Main {
+
+    public static final Scanner SCANNER = new Scanner(System.in);
+
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
-        Calculator calculator = new Calculator(new CalculatorReader(new Scanner(System.in), new Validator()));
+        CalculatorReader reader = new CalculatorReader(SCANNER, new Validator());
+        Calculator calculator = new Calculator(reader);
 
         do {
             printTheResult(calculator.getResult());
-        } while (readContinue(scanner));
+        } while (readContinue());
     }
 
-    private static boolean readContinue(Scanner scanner) {
+    private static boolean readContinue() {
         System.out.print("Continue? y/n: ");
-        while (!scanner.hasNext("[yn]")) {
-            scanner.nextLine();// Get rid of the old input
+        while (!SCANNER.hasNext("[yn]")) {
+            SCANNER.nextLine();
             System.out.print("Continue? y/n: ");
         }
-        return "y".equals(scanner.nextLine());
+        return "y".equals(SCANNER.nextLine());
     }
 
     private static void printTheResult(double number) {

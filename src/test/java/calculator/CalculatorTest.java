@@ -7,8 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reader.CalculatorReader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -25,7 +24,7 @@ class CalculatorTest {
     void should_CalculateCorrectResult_When_CorrectInput() {
         //given
         double expected = 10;
-        when(calculatorReader.startReader()).thenReturn(new ArrayList<>(Arrays.asList("20", "-", "30", "+", "20")));
+        when(calculatorReader.startReader()).thenReturn(List.of("20", "-", "30", "+", "20"));
 
         //when
         double actual = calculator.getResult();
