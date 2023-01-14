@@ -1,14 +1,12 @@
 package calculator;
 
+import lombok.AllArgsConstructor;
 import math.Expression;
 import reader.CalculatorReader;
 
+@AllArgsConstructor
 public class Calculator {
     private final CalculatorReader reader;
-
-    public Calculator(CalculatorReader reader) {
-        this.reader = reader;
-    }
 
     public double getResult() {
         Expression expression = new Expression(reader.startReader());

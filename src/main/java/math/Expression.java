@@ -1,15 +1,16 @@
 package math;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
+@RequiredArgsConstructor
 public class Expression implements Calculatable {
+    @NonNull
     private final List<String> expression;
     private int position;
     private boolean firstNumberIsNegative;
-
-    public Expression(List<String> expression) {
-        this.expression = expression;
-    }
 
     @Override
     public double calculate() {

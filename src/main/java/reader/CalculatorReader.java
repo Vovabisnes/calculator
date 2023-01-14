@@ -1,16 +1,14 @@
 package reader;
 
+import lombok.AllArgsConstructor;
+
 import java.util.List;
 import java.util.Scanner;
 
+@AllArgsConstructor
 public class CalculatorReader {
     private final Scanner scanner;
     private final Validator validator;
-
-    public CalculatorReader(Scanner scanner, Validator validator) {
-        this.scanner = scanner;
-        this.validator = validator;
-    }
 
     public List<String> startReader() {
         List<String> expression = null;
