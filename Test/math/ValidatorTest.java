@@ -1,44 +1,68 @@
 package math;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class ValidatorTest {
 
-    @ParameterizedTest
-    @CsvSource({"3 3 + 4 4 + * ", "4 4 +", "3 4 * 4 +"})
-    public void isValidTest(String expression) {
-        Assertions.assertTrue(Validator.isValid(expression.split(" ")));
+    @Nested
+    class isValidTests {
+        @ParameterizedTest
+        @CsvSource({"3 3 + 4 4 + * ", "4 4 +", "3 4 * 4 +"})
+        void should_ReturnTrue_When_RPNExpression(String input) {
+            boolean expected = Validator.isValid(input.split(" "));
+
+            assertTrue(expected, "Your input is not RPN expression");
+        }
+
+        @ParameterizedTest
+        @CsvSource({"3 + 3", "+ 4 4", "4 4 4 +", "3 3 + +", "4 3 + 4 + 4 4", "4 4", "a", "b b"})
+        void should_ReturnFalse_When_NotRPNExpression(String input) {
+            boolean expected = Validator.isValid(input.split(" "));
+
+            assertFalse(expected, "Your input is RPN expression");
+        }
     }
 
-    @ParameterizedTest
-    @CsvSource({"3 + 3", "+ 4 4", "4 4 4 +", "3 3 + +", "4 3 + 4 + 4 4", "4 4", "a", "b b"})
-    public void isNotValidTest(String expression) {
-        Assertions.assertFalse(Validator.isValid(expression.split(" ")));
+    @Nested
+    class isNumberTests {
+        @ParameterizedTest
+        @CsvSource({"3", "4.332", "0", "4234234"})
+        void should_ReturnTrue_When_Number(String input) {
+            boolean expected = Validator.isNumber(input);
+
+            assertTrue(expected, "Your input is not a number");
+        }
+
+        @ParameterizedTest
+        @CsvSource({"a", ".3", "3.3.3", "4f3", "4d", "03"})
+        void should_ReturnFalse_When_NotNumber(String input) {
+            boolean expected = Validator.isNumber(input);
+
+            assertFalse(expected, "Your input is a number");
+        }
     }
 
-    @ParameterizedTest
-    @CsvSource({"3", "4.3", "0", "4"})
-    public void isNumberTest(String number) {
-        Assertions.assertTrue(Validator.isNumber(number));
-    }
+    @Nested
+    class isOperatorTests {
+        @ParameterizedTest
+        @CsvSource({"+", "-", "*", "/"})
+        void should_ReturnTrue_When_Operator(String input) {
+            boolean expected = Validator.isOperator(input);
 
-    @ParameterizedTest
-    @CsvSource({"a", ".3", "3.3.3", "4f3", "4d", "03"})
-    public void isNotNumberTest(String number) {
-        Assertions.assertFalse(Validator.isNumber(number));
-    }
+            assertTrue(expected, "Your input is not an operator");
+        }
 
-    @ParameterizedTest
-    @CsvSource({"3", "4.3", ".", "#", "s", "plus", "minus"})
-    public void isNotOperatorTest(String operator) {
-        Assertions.assertFalse(Validator.isOperator(operator));
-    }
+        @ParameterizedTest
+        @CsvSource({"3", "4.3", ".", "#", "s", "plus", "minus", "++"})
+        void should_ReturnFalse_When_NotOperator(String input) {
+            boolean expected = Validator.isOperator(input);
 
-    @ParameterizedTest
-    @CsvSource({"+", "-", "*", "/"})
-    public void isOperatorTest(String operator) {
-        Assertions.assertTrue(Validator.isOperator(operator));
+            assertFalse(expected, "Your input is an operator");
+        }
     }
 }

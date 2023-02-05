@@ -4,7 +4,7 @@ public class Stack {
     private final String[] stack;
     private int pointer = 0;
 
-    public Stack(int size){
+    public Stack(int size) {
         stack = new String[size];
     }
 
@@ -16,22 +16,22 @@ public class Stack {
         pointer++;
     }
 
-    public String peek(){
+    public String peek() {
         if (pointer >= 1)
-            return stack[pointer-1];
+            return stack[pointer - 1];
         return null;
     }
 
-    public String pop(){
+    public String pop() {
         String lastElement = peek();
-        if (pointer > 0){
+        if (pointer > 0) {
             pointer--;
         }
         stack[pointer] = null;
         return lastElement;
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return pointer == 0 && stack[0] == null;
     }
 

@@ -1,10 +1,9 @@
 package stacks;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class StackTest {
 
@@ -18,42 +17,49 @@ class StackTest {
     @Test
     void pushTest() throws IllegalArgumentException {
         stack.push("element");
-        Assertions.assertEquals("element", stack.peek(), "nothing was pushed to stack");
+        String actual = stack.peek();
+        String expected = "element";
+        assertEquals(expected, actual, "nothing was pushed to stack");
     }
 
     @Test
-    void pushTest2() throws IllegalArgumentException {
+    void pushTestWhenException() throws IllegalArgumentException {
         stack.push("element");
         stack.push("element2");
         assertThrows(IllegalArgumentException.class,
-                () -> stack.push("element3"));
+                () -> stack.push("element3"), "position does not out equal length of stack");
     }
 
     @Test
     void peekTest() throws IllegalArgumentException {
-        stack.push("string");
-        Assertions.assertEquals("string", stack.peek(), "wrong element was picked");
+        stack.push("element");
+        String actual = stack.peek();
+        String expected = "element";
+        assertEquals(expected, actual, "wrong element was picked");
     }
 
     @Test
-    void peekTest2() throws IllegalArgumentException {
-        Assertions.assertNull(stack.peek(), "stack is not empty");
+    void peekTestWhenEmptyStack() throws IllegalArgumentException {
+        assertNull(stack.peek(), "stack is not empty");
     }
 
     @Test
-    void pop() throws IllegalArgumentException {
-        stack.push("firstElement");
-        stack.push("secondElement");
-        Assertions.assertEquals("secondElement", stack.pop(), "false element was deleted");
-        Assertions.assertEquals("firstElement", stack.peek(), "the last element in stack is wrong");
+    void popTest() throws IllegalArgumentException {
+        stack.push("element");
+        stack.push("element2");
+        assertAll(
+                () -> assertEquals("element2", stack.pop(), "false element was deleted"),
+                () -> assertEquals("element", stack.peek(), "the last element in stack is wrong")
+        );
     }
 
     @Test
-    void isEmpty() throws IllegalArgumentException {
-        stack.push("fistElement");
-        stack.push("secondElement");
+    void isEmptyTest() throws IllegalArgumentException {
+        stack.push("element");
+        stack.push("element2");
         stack.pop();
         stack.pop();
-        Assertions.assertTrue(stack.isEmpty(), "stack is not empty");
+        boolean expected = stack.isEmpty();
+        assertTrue(expected, "stack is not empty");
     }
 }

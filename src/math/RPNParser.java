@@ -26,17 +26,12 @@ public class RPNParser {
         double a = Double.parseDouble(left);
         double b = Double.parseDouble(right);
 
-        switch (operator) {
-            case "+":
-                return a + b;
-            case "-":
-                return a - b;
-            case "/":
-                return a / b;
-            case "*":
-                return a * b;
-            default:
-                throw new IllegalArgumentException("wrong operator " + operator);
-        }
+        return switch (operator) {
+            case "+" -> a + b;
+            case "-" -> a - b;
+            case "/" -> a / b;
+            case "*" -> a * b;
+            default -> throw new IllegalArgumentException("wrong operator " + operator);
+        };
     }
 }
